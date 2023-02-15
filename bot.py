@@ -4,8 +4,6 @@ import discord
 from discord.ext import commands
 from discord.voice_client import VoiceClient
 
-from cogs.TwitterCog import TwitterCog
-
 import requests
 import random
 
@@ -25,6 +23,7 @@ client = commands.Bot(command_prefix='~', intents=intents)
 async def on_ready():
     await client.load_extension("cogs.TwitterCog")
     await client.load_extension("cogs.TwitchCog")
+    await client.load_extension("cogs.VoiceCog")
     
     print(f'{client.user} has connected to Discord!')
 
@@ -102,22 +101,22 @@ async def ping(ctx):
 #     '''Sends the link to a random Ian tweet from a specified set of recent tweets (default 100, max 800)'''
 #     await tweet(ctx, 'soxeberomon', first)  # reference tweet command with ian username parameter
     
-## Voice Chat Commands
-@client.command()
-async def join(ctx):
-    '''Joins the command user's current voice channel'''
-    connected = ctx.author.voice
-    if connected:                                                   # if user is connected to a voice channel
-        await connected.channel.connect()                           # join that voice channel
-    else:                                                           # else user is not connected to voice channel
-        await ctx.send("You must be connected to a voice channel.") # send message
+# ## Voice Chat Commands
+# @client.command()
+# async def join(ctx):
+#     '''Joins the command user's current voice channel'''
+#     connected = ctx.author.voice
+#     if connected:                                                   # if user is connected to a voice channel
+#         await connected.channel.connect()                           # join that voice channel
+#     else:                                                           # else user is not connected to voice channel
+#         await ctx.send("You must be connected to a voice channel.") # send message
         
-@client.command()
-async def leave(ctx):
-    '''Leaves the bot's current voice channel'''
-    if ctx.voice_client:                                    # if bot is connected to voice channel
-        await ctx.guild.voice_client.disconnect()           # disconnect from voice channel
-    else:                                                   # else bot is not connected to voice channel
-        await ctx.send("Bot is not in a voice channel.")    # send message
+# @client.command()
+# async def leave(ctx):
+#     '''Leaves the bot's current voice channel'''
+#     if ctx.voice_client:                                    # if bot is connected to voice channel
+#         await ctx.guild.voice_client.disconnect()           # disconnect from voice channel
+#     else:                                                   # else bot is not connected to voice channel
+#         await ctx.send("Bot is not in a voice channel.")    # send message
 
 client.run(token)   # run bot
