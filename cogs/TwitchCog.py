@@ -8,6 +8,8 @@ import requests
 
 class TwitchCog(commands.Cog):
     def __init__(self, bot):
+        self.bot = bot
+        
         self.authURL = 'https://id.twitch.tv/oauth2/token'
         self.clientID = os.getenv('TWITCH_CLIENT_ID')
         self.secret = os.getenv('TWITCH_SECRET')
