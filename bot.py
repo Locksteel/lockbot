@@ -103,9 +103,7 @@ async def iantweet(ctx, first=100):
 async def join(ctx):
     '''Joins the command user's current voice channel'''
     connected = ctx.author.voice
-    if connected == ctx.voice_client.channel:                       # if bot is already connected to that channel
-        await ctx.send("Bot is already connected to that channel.") # send message
-    elif connected:                                                 # else if user is connected to a voice channel
+    if connected:                                                   # if user is connected to a voice channel
         await connected.channel.connect()                           # join that voice channel
     else:                                                           # else user is not connected to voice channel
         await ctx.send("You must be connected to a voice channel.") # send message
