@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from discord.voice_client import VoiceClient
 
-import tweepy
+from cogs.TwitterCog import TwitterCog
 
 import requests
 import random
@@ -23,7 +23,10 @@ client = commands.Bot(command_prefix='~', intents=intents)
 
 @client.event
 async def on_ready():
+    await client.load_extension("cogs.TwitterCog")
+    
     print(f'{client.user} has connected to Discord!')
+
     
 # Twitch API connection
 twitchAuthURL = 'https://id.twitch.tv/oauth2/token'
@@ -44,13 +47,13 @@ def getTwitchID(username):
     req = requests.get(f'https://api.twitch.tv/helix/users?login={username}', headers=head)
     return req.json()['data'][0]['id']
 
-# Twitter API connection
-twitterClient = tweepy.Client(bearer_token=os.getenv('TWITTER_BEARER_TOKEN'))
+# # Twitter API connection
+# twitterClient = tweepy.Client(bearer_token=os.getenv('TWITTER_BEARER_TOKEN'))
 
-def getTwitterID(username):
-    '''Gets the Twitter user ID from a passed username'''
-    user = twitterClient.get_user(username=username)    # use tweepy get_user to get user info from username
-    return user[0]['data']['id']                        # return user id
+# def getTwitterID(username):
+#     '''Gets the Twitter user ID from a passed username'''
+#     user = twitterClient.get_user(username=username)    # use tweepy get_user to get user info from username
+#     return user[0]['data']['id']                        # return user id
 
 # YouTube API connection
 
@@ -80,23 +83,23 @@ async def jerma(ctx, first=100):
     '''Sends the link to a random Jerma985 Twitch clip from a specified set of top clips (max/default 100)'''
     await clip(ctx, 'jerma985', first)  # reference clip command with jerma username parameter
 
-## Twitter Commands
-@client.command()
-async def tweet(ctx, user, first=100):
-    '''Sends the link to a random tweet from passed user from a specified set of recent tweets'''
-    tweets = twitterClient.get_users_tweets(    # get user tweets
-        id=getTwitterID(user),                  # from passed user
-        max_results=first,                      # find first passed number
-        exclude=['retweets', 'replies']         # only include original tweets
-        )
-    tweetID = random.choice(tweets[0])['id']                # choose a random tweet id from list
-    tweetURL = f'https://vxtwitter.com/x/status/{tweetID}'  # get tweet link from id
-    await ctx.send(tweetURL)                                # send tweet link
+# ## Twitter Commands
+# @client.command()
+# async def tweet(ctx, user, first=100):
+#     '''Sends the link to a random tweet from passed user from a specified set of recent tweets'''
+#     tweets = twitterClient.get_users_tweets(    # get user tweets
+#         id=getTwitterID(user),                  # from passed user
+#         max_results=first,                      # find first passed number
+#         exclude=['retweets', 'replies']         # only include original tweets
+#         )
+#     tweetID = random.choice(tweets[0])['id']                # choose a random tweet id from list
+#     tweetURL = f'https://vxtwitter.com/x/status/{tweetID}'  # get tweet link from id
+#     await ctx.send(tweetURL)                                # send tweet link
         
-@client.command()
-async def iantweet(ctx, first=100):
-    '''Sends the link to a random Ian tweet from a specified set of recent tweets (default 100, max 800)'''
-    await tweet(ctx, 'soxeberomon', first)  # reference tweet command with ian username parameter
+# @client.command()
+# async def iantweet(ctx, first=100):
+#     '''Sends the link to a random Ian tweet from a specified set of recent tweets (default 100, max 800)'''
+#     await tweet(ctx, 'soxeberomon', first)  # reference tweet command with ian username parameter
     
 ## Voice Chat Commands
 @client.command()
