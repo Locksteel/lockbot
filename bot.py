@@ -13,20 +13,20 @@ token = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = commands.Bot(command_prefix='~', intents=intents)
+bot = commands.Bot(command_prefix='~', intents=intents)
 
-@client.event
+@bot.event
 async def on_ready():
-    await client.load_extension("cogs.TwitterCog")
-    await client.load_extension("cogs.TwitchCog")
-    await client.load_extension("cogs.VoiceCog")
+    for filename in os.listdir('./cogs'):                       # for each file in cogs folder
+        if filename.endswith('.py'):                            # if file is a python file
+            await bot.load_extension(f'cogs.{filename[:-3]}')   # load that file as a cog
     
-    print(f'{client.user} has connected to Discord!')
+    print(f'{bot.user} has connected to Discord!')
 
 ## Utility Commands
-@client.command()
+@bot.command()
 async def ping(ctx):
     '''Sends a response message.'''
     await ctx.send('Pong!')
 
-client.run(token)   # run bot
+bot.run(token)  # run bot
