@@ -1,6 +1,8 @@
 import os
 import random
 
+from commands import printLog
+
 from discord.ext import commands
 
 import tweepy
@@ -37,6 +39,7 @@ class TwitterCog(commands.Cog, name='Twitter'):
             tweetID = random.choice(tweets[0])['id']                # choose a random tweet id from list
             tweetURL = f'https://vxtwitter.com/x/status/{tweetID}'  # get tweet link from id
             await ctx.send(tweetURL)                                # send tweet link
+            printLog(ctx)
             
     @commands.command(name='iantweet',
                       aliases=['it', 'ian'],

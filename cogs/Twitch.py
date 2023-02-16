@@ -1,6 +1,8 @@
 import os
 import random
 
+from commands import printLog
+
 from discord.ext import commands
 
 import requests
@@ -48,6 +50,7 @@ class TwitchCog(commands.Cog, name='Twitch'):
             clip = random.choice(data['data'])              # choose a random clip
             clipUrl = clip['url']                           # get clip's url
             await ctx.send(clipUrl)                         # send clip's url
+            printLog(ctx)
         
     @commands.command(name='jerma',
                       aliases=['jerma985'],
