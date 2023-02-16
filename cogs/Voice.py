@@ -1,3 +1,5 @@
+from commands import printLog
+
 from discord.ext import commands
 from discord.voice_client import VoiceClient
 
@@ -14,6 +16,7 @@ class VoiceCog(commands.Cog, name='Voice'):
         connected = ctx.author.voice
         if connected:                                                   # if user is connected to a voice channel
             await connected.channel.connect()                           # join that voice channel
+            printLog(ctx)
         else:                                                           # else user is not connected to voice channel
             await ctx.send("You must be connected to a voice channel.") # send message
             
@@ -25,6 +28,7 @@ class VoiceCog(commands.Cog, name='Voice'):
         '''Leaves the bot's current voice channel'''
         if ctx.voice_client:                                    # if bot is connected to voice channel
             await ctx.guild.voice_client.disconnect()           # disconnect from voice channel
+            printLog(ctx)
         else:                                                   # else bot is not connected to voice channel
             await ctx.send("Bot is not in a voice channel.")    # send message
             

@@ -1,3 +1,5 @@
+from commands import printLog
+
 from discord.ext import commands
 
 class UtilityCog(commands.Cog, name='Utility'):
@@ -12,6 +14,7 @@ class UtilityCog(commands.Cog, name='Utility'):
     async def ping(self, ctx):
         '''Returns with a message reading "Pong!"'''
         await ctx.send('Pong!')
+        printLog(ctx)
         
 async def setup(bot):
     await bot.add_cog(UtilityCog(bot))
