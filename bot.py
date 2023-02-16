@@ -23,10 +23,4 @@ async def on_ready():
     
     print(f'{bot.user} has connected to Discord!')
 
-## Utility Commands
-@bot.command()
-async def ping(ctx):
-    '''Sends a response message.'''
-    await ctx.send('Pong!')
-
 bot.run(token)  # run bot
