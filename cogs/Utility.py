@@ -1,4 +1,4 @@
-from commands import printLog
+from localcmds import printLog
 
 from discord.ext import commands
 
