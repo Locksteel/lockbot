@@ -14,6 +14,7 @@ token = os.getenv('DISCORD_TOKEN')
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 
 bot = commands.Bot(command_prefix='~', intents=intents)
 
@@ -33,12 +34,6 @@ async def on_ready():
             
     for guild in bot.guilds:
         addMarryFile(guild)
-        
-    testuser = MarriageUser(123, 364196302822703105)
-    testuser2 = MarriageUser(456, 364196302822703105)
-    testuser.addPartner(456)
-    print(testuser.partners)
-    print(testuser2.partners)
     
     print(f'{bot.user} has connected to Discord!')
     

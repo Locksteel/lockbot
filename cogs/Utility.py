@@ -16,5 +16,14 @@ class UtilityCog(commands.Cog, name='Utility'):
         await ctx.send('Pong!')
         printLog(ctx)
         
+    @commands.command(name='author',
+                      aliases=[],
+                      brief='Pings the author of command',
+                      hidden=True
+                      )
+    async def author(self, ctx):
+        '''Returns with a message pinging the author of the command'''
+        await ctx.send(ctx.author.mention)
+        
 async def setup(bot):
     await bot.add_cog(UtilityCog(bot))
