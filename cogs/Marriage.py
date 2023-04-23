@@ -69,7 +69,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Sends an adoption request to another user'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            if ctx.author.id == target.id:                              # if sender targeted themself
+            if authorUser.get(target.id, ctx.guild.id).pending:
+                await ctx.send("That user has pending request. Please wait to make another.")
+            elif ctx.author.id == target.id:                              # if sender targeted themself
                 await ctx.send("You can't adopt yourself.")
             elif target.id in authorUser.children:                      # if sender was already adopted by target
                 await ctx.send("That user is already your child.")
@@ -90,6 +92,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['❤️', '💔']
                 
                 try:
+                    authorUser.setOtherPending(target.id, True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
                     await ctx.send('Adoption timed out.')
@@ -102,6 +105,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                     elif str(reaction.emoji) == '💔':
                         # adoption fail
                         await ctx.send(f'Unfortunately {target.mention} is not interested.')
+                authorUser.setOtherPending(target.id, False)
                 
     @commands.command(name='divorce',
                       aliases=['dv'],
@@ -113,7 +117,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Divorces another user you are married to'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            if ctx.author.id == target.id:                              # if sender targeted themself
+            if authorUser.pending:
+                await ctx.send("You have a pending request. Please complete it to make another.")
+            elif ctx.author.id == target.id:                              # if sender targeted themself
                 await ctx.send("You can't divorce yourself.")
             elif target.id not in authorUser.partners:                  # if sender is not married to target
                 await ctx.send("You are not married to that user.")
@@ -129,6 +135,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['✅', '❌']
                         
                 try:
+                    authorUser.setPending(True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
                     await ctx.send('Divorce timed out.')
@@ -141,6 +148,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                     elif str(reaction.emoji) == '❌':
                         # divorce fail
                         await ctx.send('Divorce cancelled.')
+                authorUser.setPending(False)
     
     @commands.command(name='disown',
                       aliases=['do'],
@@ -152,7 +160,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Disowns one of your children'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            if ctx.author.id == target.id:                              # if sender targeted themself
+            if authorUser.pending:
+                await ctx.send("You have a pending request. Please complete it to make another.")
+            elif ctx.author.id == target.id:                              # if sender targeted themself
                 await ctx.send("You can't disown yourself.")
             elif target.id not in authorUser.children:                  # if target is not a child of sender
                 await ctx.send("That user is not your child.")
@@ -168,6 +178,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['✅', '❌']
                         
                 try:
+                    authorUser.setPending(True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
                     await ctx.send('Disown timed out.')
@@ -179,6 +190,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         await ctx.send(f'Sorry {target.mention}, {ctx.author.mention} no longer cares about you.')
                     elif str(reaction.emoji) == '❌':
                         await ctx.send('Disown cancelled.')
+                authorUser.setPending(False)
     
     @commands.command(name='cps',
                       aliases=[],
@@ -190,7 +202,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Disowns one of your parents'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            if ctx.author.id == target.id:                              # if sender targeted themself
+            if authorUser.pending:
+                await ctx.send("You have a pending request. Please complete it to make another.")
+            elif ctx.author.id == target.id:                              # if sender targeted themself
                 await ctx.send("You can't disown yourself.")
             elif target.id not in authorUser.parents:                   # if target is not a child of sender
                 await ctx.send("That user is not your parent.")
@@ -206,6 +220,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['✅', '❌']
                 
                 try:
+                    authorUser.setPending(True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
                     await ctx.send('Disown timed out.')
@@ -217,6 +232,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         await ctx.send(f'Sorry {target.mention}, you are no longer the boss of {ctx.author.mention}.')
                     elif str(reaction.emoji) == '❌':
                         await ctx.send('Disown cancelled.')
+                authorUser.setPending(False)
             
 
 async def setup(bot):
