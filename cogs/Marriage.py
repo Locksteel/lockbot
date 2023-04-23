@@ -19,8 +19,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Sends a proposal to another user'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            
-            if ctx.author.id == target.id:                              # if sender targeted themself
+            if authorUser.get(target.id, ctx.guild.id).pending:
+                await ctx.send("That user has pending request. Please wait to make another.")
+            elif ctx.author.id == target.id:                            # if sender targeted themself
                 await ctx.send("You can't marry yourself.")
             elif target.id in authorUser.partners:                      # if sender is already married to target
                 await ctx.send("You are already married to that user.")
@@ -41,10 +42,10 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['❤️', '💔']
                 
                 try:
+                    authorUser.setOtherPending(target.id, True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
                     await ctx.send('Proposal timed out.')
-                    return
                 else:
                     if str(reaction.emoji) == '❤️':
                         # marry success
@@ -56,6 +57,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                     elif str(reaction.emoji) == '💔':
                         # marry fail
                         await ctx.send(f'Unfortunately {target.mention} is not interested.')
+                authorUser.setOtherPending(target.id, False)
             
     @commands.command(name='adopt',
                       aliases=['a'],

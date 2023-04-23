@@ -15,6 +15,7 @@ class MarriageUser:
         self.children:  list[int] = []
         self.parents:   list[int] = []
         self.partners:  list[int] = []
+        self.pending: bool = False
         
         self.savePath = f'serverData/{self.guildID}/{self.id}.json'
         
@@ -44,8 +45,9 @@ class MarriageUser:
         return {'id': self.id,
                 'guild_id': self.guildID,
                 'children': self.children,
-                'parents': self.parents,
-                'partners': self.partners
+                'parents':  self.parents,
+                'partners': self.partners,
+                'pending':  self.pending
                 }
     
     def saveJSON(self):
@@ -62,6 +64,7 @@ class MarriageUser:
             self.children = userDict['children']
             self.parents = userDict['parents']
             self.partners = userDict['partners']
+            self.pending = userDict['pending']
         except FileNotFoundError:
             print(f"No save found for user {self.id} in guild {self.guildID}. No changes have been made.")
     
@@ -105,3 +108,11 @@ class MarriageUser:
         self.parents.remove(parentID)
         parent.children.remove(self.id)
         parent.saveJSON()
+    
+    def setPending(self, newVal: bool):
+        self.pending = newVal
+        self.saveJSON()
+        
+    def setOtherPending(self, id: int, newVal: bool):
+        other = self.get(id, self.guildID)
+        other.setPending(newVal)
