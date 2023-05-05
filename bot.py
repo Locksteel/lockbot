@@ -35,6 +35,14 @@ async def on_ready():
     for guild in bot.guilds:
         addMarryFile(guild)
     
+    # reset all pending flags to false
+    for _, dirs, _ in os.walk('serverData'):
+        for guildID in dirs:
+            for _, _, files in os.walk('serverData/'+guildID):
+                for userID in files:
+                    with MarriageUser(int(userID[:-5]), guildID) as user:
+                        user.setPending(False)
+    
     print(f'{bot.user} has connected to Discord!')
     
 @bot.event

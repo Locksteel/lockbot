@@ -11,11 +11,11 @@ class MarriageUser:
                  empty: bool = False
                  ):
         self.id = id
-        self.guildID = guildID
+        self.guildID:   int = guildID
         self.children:  list[int] = []
         self.parents:   list[int] = []
         self.partners:  list[int] = []
-        self.pending: bool = False
+        self.pending:   bool = False
         
         self.savePath = f'serverData/{self.guildID}/{self.id}.json'
         
@@ -43,7 +43,6 @@ class MarriageUser:
         
     def getDict(self):
         return {'id': self.id,
-                'guild_id': self.guildID,
                 'children': self.children,
                 'parents':  self.parents,
                 'partners': self.partners,

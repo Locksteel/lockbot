@@ -1,9 +1,12 @@
 from cogs.utils.MarriageUser import MarriageUser
 
+import discord
 from discord.ext import commands
 import os
 
-import discord
+# TO DO:
+# Add proper command permissions
+# Make response reply to original command
 
 class MarriageCog(commands.Cog, name='Marriage'):
     def __init__(self, bot):
@@ -57,7 +60,11 @@ class MarriageCog(commands.Cog, name='Marriage'):
                     elif str(reaction.emoji) == '💔':
                         # marry fail
                         await ctx.send(f'Unfortunately {target.mention} is not interested.')
-                authorUser.setOtherPending(target.id, False)
+                # remove reactions after command conclusion
+                await msg.remove_reaction('❤️', self.bot.user)
+                await msg.remove_reaction('💔', self.bot.user)
+                
+                authorUser.setOtherPending(target.id, False)    # reset pending flag
             
     @commands.command(name='adopt',
                       aliases=['a'],
@@ -71,7 +78,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
             if authorUser.get(target.id, ctx.guild.id).pending:
                 await ctx.send("That user has pending request. Please wait to make another.")
-            elif ctx.author.id == target.id:                              # if sender targeted themself
+            elif ctx.author.id == target.id:                            # if sender targeted themself
                 await ctx.send("You can't adopt yourself.")
             elif target.id in authorUser.children:                      # if sender was already adopted by target
                 await ctx.send("That user is already your child.")
@@ -105,7 +112,11 @@ class MarriageCog(commands.Cog, name='Marriage'):
                     elif str(reaction.emoji) == '💔':
                         # adoption fail
                         await ctx.send(f'Unfortunately {target.mention} is not interested.')
-                authorUser.setOtherPending(target.id, False)
+                # remove reactions after command conclusion
+                await msg.remove_reaction('❤️', self.bot.user)
+                await msg.remove_reaction('💔', self.bot.user)
+                        
+                authorUser.setOtherPending(target.id, False)    # reset pending flag
                 
     @commands.command(name='divorce',
                       aliases=['dv'],
@@ -148,7 +159,11 @@ class MarriageCog(commands.Cog, name='Marriage'):
                     elif str(reaction.emoji) == '❌':
                         # divorce fail
                         await ctx.send('Divorce cancelled.')
-                authorUser.setPending(False)
+                # remove reactions after command conclusion
+                await msg.remove_reaction('✅', self.bot.user)
+                await msg.remove_reaction('❌', self.bot.user)
+                
+                authorUser.setPending(False)    # reset pending flag
     
     @commands.command(name='disown',
                       aliases=['do'],
@@ -190,7 +205,11 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         await ctx.send(f'Sorry {target.mention}, {ctx.author.mention} no longer cares about you.')
                     elif str(reaction.emoji) == '❌':
                         await ctx.send('Disown cancelled.')
-                authorUser.setPending(False)
+                # remove reactions after command conclusion
+                await msg.remove_reaction('✅', self.bot.user)
+                await msg.remove_reaction('❌', self.bot.user)
+                
+                authorUser.setPending(False)    # reset pending flag
     
     @commands.command(name='cps',
                       aliases=[],
@@ -232,7 +251,50 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         await ctx.send(f'Sorry {target.mention}, you are no longer the boss of {ctx.author.mention}.')
                     elif str(reaction.emoji) == '❌':
                         await ctx.send('Disown cancelled.')
-                authorUser.setPending(False)
+                # remove reactions after command conclusion
+                await msg.remove_reaction('✅', self.bot.user)
+                await msg.remove_reaction('❌', self.bot.user)
+                
+                authorUser.setPending(False)    # reset pending flag
+                
+    @commands.command(name='family',
+                      aliases=['f'],
+                      brief='List a user\'s family'
+                      )
+    async def family(self, ctx,
+                     target: discord.Member = commands.parameter(description='User to list family of', default=None)
+                     ):
+        '''Lists the family of you or a mentioned user'''
+        
+        if target is None: target = ctx.author
+        
+        with MarriageUser(target.id, ctx.guild.id) as user:
+            print(user.id + ' fetched')
+            if user.parents or user.children or user.partners:
+                parentsStr = ''
+                childrenStr = ''
+                partnersStr = ''
+                
+                for parentID in user.parents:
+                    parent = await ctx.guild.fetch_member(parentID)
+                    parentsStr += str(parent.nick) + '\n'
+                for childID in user.children:
+                    print('made it to children loop')
+                    child = await ctx.guild.fetch_member(childID)
+                    childrenStr += str(child.nick) + '\n'
+                for partnerID in user.partners:
+                    partner = await ctx.guild.fetch_member(partnerID)
+                    partnersStr += str(partner.nick) + '\n'
+                    
+                embed = discord.Embed(title=f'{target.nick}\'s Family')
+                
+                if parentsStr:  embed.add_field(name='Parents', value=parentsStr, inline=False)
+                if childrenStr: embed.add_field(name='Children', value=childrenStr, inline=False)
+                if partnersStr: embed.add_field(name='Partners', value=partnersStr, inline=False)
+                
+                await ctx.send(embed=embed)
+            else:
+                ctx.send('You have no family. 😞')
             
 
 async def setup(bot):
