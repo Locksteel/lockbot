@@ -269,7 +269,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
         if target is None: target = ctx.author
         
         with MarriageUser(target.id, ctx.guild.id) as user:
-            print(user.id + ' fetched')
+            print(str(user.id) + ' fetched')
             if user.parents or user.children or user.partners:
                 parentsStr = ''
                 childrenStr = ''
@@ -277,16 +277,15 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 
                 for parentID in user.parents:
                     parent = await ctx.guild.fetch_member(parentID)
-                    parentsStr += str(parent.nick) + '\n'
+                    parentsStr += str(parent.name) + '\n'
                 for childID in user.children:
-                    print('made it to children loop')
                     child = await ctx.guild.fetch_member(childID)
-                    childrenStr += str(child.nick) + '\n'
+                    childrenStr += str(child.name) + '\n'
                 for partnerID in user.partners:
                     partner = await ctx.guild.fetch_member(partnerID)
-                    partnersStr += str(partner.nick) + '\n'
+                    partnersStr += str(partner.name) + '\n'
                     
-                embed = discord.Embed(title=f'{target.nick}\'s Family')
+                embed = discord.Embed(title=f'{target.name}\'s Family')
                 
                 if parentsStr:  embed.add_field(name='Parents', value=parentsStr, inline=False)
                 if childrenStr: embed.add_field(name='Children', value=childrenStr, inline=False)
