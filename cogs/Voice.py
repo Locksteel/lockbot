@@ -7,10 +7,10 @@ class VoiceCog(commands.Cog, name='Voice'):
     def __init__(self, bot):
         self.bot = bot
         
-    @commands.command(name='join',
-                      aliases=[],
-                      brief='Joins voice channel'
-                      )
+    @commands.hybrid_command(name='join',
+                             aliases=[],
+                             brief='Joins voice channel'
+                             )
     async def join(self, ctx):
         '''Joins the command user's current voice channel'''
         connected = ctx.author.voice
@@ -20,10 +20,10 @@ class VoiceCog(commands.Cog, name='Voice'):
         else:                                                           # else user is not connected to voice channel
             await ctx.send("You must be connected to a voice channel.") # send message
             
-    @commands.command(name='leave',
-                      aliases=[],
-                      brief='Leaves voice channel'
-                      )
+    @commands.hybrid_command(name='leave',
+                             aliases=[],
+                             brief='Leaves voice channel'
+                             )
     async def leave(self, ctx):
         '''Leaves the bot's current voice channel'''
         if ctx.voice_client:                                    # if bot is connected to voice channel

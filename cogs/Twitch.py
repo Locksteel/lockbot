@@ -30,10 +30,10 @@ class TwitchCog(commands.Cog, name='Twitch'):
         req = requests.get(f'https://api.twitch.tv/helix/users?login={username}', headers=self.head)
         return req.json()['data'][0]['id']
     
-    @commands.command(name='clip',
-                      aliases=['twitchclip', 'c'],
-                      brief='Sends random Twitch clip from user'
-                      )
+    @commands.hybrid_command(name='clip',
+                             aliases=['twitchclip', 'c'],
+                             brief='Sends random Twitch clip from user'
+                             )
     async def clip(self, ctx,
                    username:   str = commands.parameter(description='Username of Twitch user to search'),
                    first:      int = commands.parameter(description='Number of top clips to access', default=100)
@@ -52,10 +52,10 @@ class TwitchCog(commands.Cog, name='Twitch'):
             await ctx.send(clipUrl)                         # send clip's url
             printLog(ctx)
         
-    @commands.command(name='jerma',
-                      aliases=['jerma985'],
-                      brief='Sends random Twitch clip from Jerma985'
-                      )
+    @commands.hybrid_command(name='jerma',
+                             aliases=['jerma985'],
+                             brief='Sends random Twitch clip from Jerma985'
+                             )
     async def jerma(self, ctx,
                     first: int = commands.parameter(default=100, description='Number of top clips to access')
                     ):
