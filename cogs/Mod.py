@@ -7,10 +7,10 @@ class ModCog(commands.Cog, name='Moderation'):
     def __init__(self, bot):
         self.bot = bot
         
-    @commands.command(name='purge',
-                      aliases=['p'],
-                      brief='Deletes a number of recent messages'
-                      )
+    @commands.hybrid_command(name='purge',
+                             aliases=['p'],
+                             brief='Deletes a number of recent messages'
+                             )
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx,
                     count:  int = commands.parameter(description='Number of messages to remove'),
@@ -24,10 +24,10 @@ class ModCog(commands.Cog, name='Moderation'):
             await ctx.send('Purge failed.')
         printLog(ctx)
         
-    @commands.command(name='kick',
-                      aliases=['k'],
-                      brief='Kicks a user',
-                      )
+    @commands.hybrid_command(name='kick',
+                             aliases=['k'],
+                             brief='Kicks a user',
+                             )
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx,
                    user:    Member = commands.parameter(description='User to kick'),
@@ -41,18 +41,18 @@ class ModCog(commands.Cog, name='Moderation'):
             await ctx.send('Kick failed.')
         printLog(ctx)
             
-    @commands.command(name='ban',
-                      aliases=['b'],
-                      brief='Bans a user',
-                      )
+    @commands.hybrid_command(name='ban',
+                             aliases=['b'],
+                             brief='Bans a user',
+                             )
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx,
                   user:        Member = commands.parameter(description='User to ban'),
-                  delMsgSecs:  int = commands.parameter(description='Number of seconds of messages from user to delete', default=None),
+                  del_msg_secs:  int = commands.parameter(description='Number of seconds of messages from user to delete', default=None),
                   reason:      str = commands.parameter(description='Reason for ban', default=None)
                    ):
         try:
-            await user.ban(delete_message_seconds=delMsgSecs, reason=reason)
+            await user.ban(delete_message_seconds=del_msg_secs, reason=reason)
         except NotFound:
             await ctx.send('User not found.')
         except Forbidden:
@@ -61,10 +61,10 @@ class ModCog(commands.Cog, name='Moderation'):
             await ctx.send('Ban failed.')
         printLog(ctx)
         
-    @commands.command(name='unban',
-                      aliases=['ub'],
-                      brief='Unbans a user'
-                      )
+    @commands.hybrid_command(name='unban',
+                             aliases=['ub'],
+                             brief='Unbans a user'
+                             )
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx,
                     user:   Member = commands.parameter(description='User to unban'),

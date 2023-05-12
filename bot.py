@@ -1,6 +1,7 @@
 import os
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from dotenv import load_dotenv
@@ -31,6 +32,8 @@ async def on_ready():
     for filename in os.listdir('./cogs'):                       # for each file in cogs folder
         if filename.endswith('.py'):                            # if file is a python file
             await bot.load_extension(f'cogs.{filename[:-3]}')   # load that file as a cog
+            
+    await bot.tree.sync()
             
     for guild in bot.guilds:
         addMarryFile(guild)

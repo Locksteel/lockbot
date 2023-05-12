@@ -18,10 +18,10 @@ class TwitterCog(commands.Cog, name='Twitter'):
         user = self.twitterClient.get_user(username=username)   # use tweepy get_user to get user info from username
         return user[0]['data']['id']                            # return user id
     
-    @commands.command(name='tweet',
-                      aliases=['gettweet', 't'],
-                      brief='Sends random tweet from user'
-                      )
+    @commands.hybrid_command(name='tweet',
+                             aliases=['gettweet', 't'],
+                             brief='Sends random tweet from user'
+                             )
     async def tweet(self, ctx,
                     user:  str = commands.parameter(description='Username of Twitter user to search'),
                     first: int = commands.parameter(description='Number of recent tweets to access', default=100)
@@ -41,10 +41,10 @@ class TwitterCog(commands.Cog, name='Twitter'):
             await ctx.send(tweetURL)                                # send tweet link
             printLog(ctx)
             
-    @commands.command(name='iantweet',
-                      aliases=['it', 'ian'],
-                      brief='Sends a random tweet from Ian'
-                      )
+    @commands.hybrid_command(name='iantweet',
+                             aliases=['it', 'ian'],
+                             brief='Sends a random tweet from Ian'
+                             )
     async def iantweet(self, ctx,
                        first:  int = commands.parameter(description='Number of recent tweets to access', default=100)
                        ):
