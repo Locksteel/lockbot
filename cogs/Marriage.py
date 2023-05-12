@@ -12,10 +12,10 @@ class MarriageCog(commands.Cog, name='Marriage'):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command(name='marry',
-                      aliases=['propose', 'm'],
-                      brief='Propose to another user'
-                      )
+    @commands.hybrid_command(name='marry',
+                             aliases=['propose', 'm'],
+                             brief='Propose to another user'
+                             )
     async def marry(self, ctx,
                     target: discord.Member = commands.parameter(description='User to propose to')
                     ):
@@ -66,10 +66,10 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 
                 authorUser.setOtherPending(target.id, False)    # reset pending flag
             
-    @commands.command(name='adopt',
-                      aliases=['a'],
-                      brief='Request to adopt a user'
-                      )
+    @commands.hybrid_command(name='adopt',
+                             aliases=['a'],
+                             brief='Request to adopt a user'
+                             )
     async def adopt(self, ctx,
                     target: discord.Member = commands.parameter(description='User to adopt')
                     ):
@@ -118,10 +118,10 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         
                 authorUser.setOtherPending(target.id, False)    # reset pending flag
                 
-    @commands.command(name='divorce',
-                      aliases=['dv'],
-                      brief='Divorces a user'
-                      )
+    @commands.hybrid_command(name='divorce',
+                             aliases=['dv'],
+                             brief='Divorces a user'
+                             )
     async def divorce(self, ctx,
                       target: discord.Member = commands.parameter(description='User to divorce')
                       ):
@@ -165,10 +165,10 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 
                 authorUser.setPending(False)    # reset pending flag
     
-    @commands.command(name='disown',
-                      aliases=['do'],
-                      brief='Disowns a child'
-                      )
+    @commands.hybrid_command(name='disown',
+                             aliases=['do'],
+                             brief='Disowns a child'
+                             )
     async def disown(self, ctx,
                      target: discord.Member = commands.parameter(description='Child to disown')
                      ):
@@ -211,10 +211,10 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 
                 authorUser.setPending(False)    # reset pending flag
     
-    @commands.command(name='cps',
-                      aliases=[],
-                      brief='Disowns a parent'
-                      )
+    @commands.hybrid_command(name='cps',
+                             aliases=[],
+                             brief='Disowns a parent'
+                             )
     async def cps(self, ctx,
                   target: discord.Member = commands.parameter(description='Parent to disown')
                   ):
@@ -257,10 +257,10 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 
                 authorUser.setPending(False)    # reset pending flag
                 
-    @commands.command(name='family',
-                      aliases=['f'],
-                      brief='List a user\'s family'
-                      )
+    @commands.hybrid_command(name='family',
+                             aliases=['f'],
+                             brief='List a user\'s family'
+                             )
     async def family(self, ctx,
                      target: discord.Member = commands.parameter(description='User to list family of', default=None)
                      ):
