@@ -4,5 +4,4 @@ Lockbot is a small-scale Discord bot. It's core purpose is for my own personal e
 
 ## Dependencies
 discord.py,
-tweepy,
-dotenv
+tweepy
