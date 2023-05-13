@@ -266,34 +266,35 @@ class MarriageCog(commands.Cog, name='Marriage'):
                      ):
         '''Lists the family of you or a mentioned user'''
         
-        if target is None: target = ctx.author
+        if target is None: target = ctx.author  # if no target is given, set target to author
         
-        with MarriageUser(target.id, ctx.guild.id) as user:
-            print(user.id + ' fetched')
-            if user.parents or user.children or user.partners:
+        with MarriageUser(target.id, ctx.guild.id) as user: # fetch target
+            print(str(user.id) + ' fetched')
+            if user.parents or user.children or user.partners:  # check if target has a family
+                # strings holding lists of family members
                 parentsStr = ''
                 childrenStr = ''
                 partnersStr = ''
                 
-                for parentID in user.parents:
-                    parent = await ctx.guild.fetch_member(parentID)
-                    parentsStr += str(parent.nick) + '\n'
-                for childID in user.children:
-                    print('made it to children loop')
-                    child = await ctx.guild.fetch_member(childID)
-                    childrenStr += str(child.nick) + '\n'
-                for partnerID in user.partners:
-                    partner = await ctx.guild.fetch_member(partnerID)
-                    partnersStr += str(partner.nick) + '\n'
+                for parentID in user.parents:                           # for each parent
+                    parent = await ctx.guild.fetch_member(parentID)     # fetch parent
+                    parentsStr += str(parent.name) + '\n'               # add parent to list
+                for childID in user.children:                           # for each child
+                    child = await ctx.guild.fetch_member(childID)       # fetch child
+                    childrenStr += str(child.name) + '\n'               # add child to list
+                for partnerID in user.partners:                         # for each partner
+                    partner = await ctx.guild.fetch_member(partnerID)   # fetch partner
+                    partnersStr += str(partner.name) + '\n'             # add partner to list
                     
-                embed = discord.Embed(title=f'{target.nick}\'s Family')
+                embed = discord.Embed(title=f'{target.name}\'s Family') # create embed
                 
+                # add family member lists to embed
                 if parentsStr:  embed.add_field(name='Parents', value=parentsStr, inline=False)
                 if childrenStr: embed.add_field(name='Children', value=childrenStr, inline=False)
                 if partnersStr: embed.add_field(name='Partners', value=partnersStr, inline=False)
                 
-                await ctx.send(embed=embed)
-            else:
+                await ctx.send(embed=embed) # send embed
+            else:   # target has no family
                 ctx.send('You have no family. 😞')
             
 
