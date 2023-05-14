@@ -157,3 +157,14 @@ class MarriageUser:
                 grandchildren.update(parent.getGrandchildren(greats + 1, grandchildren, origin))
 
         return grandchildren
+    
+    def getSiblings(self) -> list[int]:
+        siblings = []
+        
+        for parentID in self.parents:
+            parent = self.get(parentID, self.guildID)
+            for siblingID in parent.children:
+                if siblingID != self.id and siblingID not in siblings:
+                    siblings.append(siblingID)
+                
+        return siblings

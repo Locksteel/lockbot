@@ -273,12 +273,16 @@ class MarriageCog(commands.Cog, name='Marriage'):
             if user.parents or user.children or user.partners:  # check if target has a family
                 # strings holding lists of family members
                 parentsStr = ''
+                siblingsStr = ''
                 childrenStr = ''
                 partnersStr = ''
                 
                 for parentID in user.parents:                           # for each parent
                     parent = await ctx.guild.fetch_member(parentID)     # fetch parent
                     parentsStr += str(parent.name) + '\n'               # add parent to list
+                for siblingID in user.getSiblings():                    # for each sibling
+                    sibling = await ctx.guild.fetch_member(siblingID)   # fetch sibling
+                    siblingsStr += str(sibling.name) + '\n'             # add sibling to list
                 for childID in user.children:                           # for each child
                     child = await ctx.guild.fetch_member(childID)       # fetch child
                     childrenStr += str(child.name) + '\n'               # add child to list
@@ -311,15 +315,17 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 # add family member lists to embed
                 if parentsStr:  embed.add_field(name='Parents', value=parentsStr, inline=False)
                 
-                for gpType, gpStr in gpStrings.items():
-                    embed.add_field(name=gpType, value=gpStr, inline=False)
+                if siblingsStr: embed.add_field(name='Siblings', value=siblingsStr, inline=False)
                     
                 if childrenStr: embed.add_field(name='Children', value=childrenStr, inline=False)
                 
+                if partnersStr: embed.add_field(name='Partners', value=partnersStr, inline=False)
+                
+                for gpType, gpStr in gpStrings.items():
+                    embed.add_field(name=gpType, value=gpStr, inline=False)
+                
                 for gcType, gcStr in gcStrings.items():
                     embed.add_field(name=gcType, value=gcStr, inline=False)
-                
-                if partnersStr: embed.add_field(name='Partners', value=partnersStr, inline=False)
                 
                 await ctx.send(embed=embed) # send embed
             else:   # target has no family
