@@ -115,3 +115,45 @@ class MarriageUser:
     def setOtherPending(self, id: int, newVal: bool):
         other = self.get(id, self.guildID)
         other.setPending(newVal)
+        
+    # returns dict of lists of user ids
+    def getGrandparents(self, greats: int = -1, grandparents: dict[str, list[int]] = {}, origin: int = 0) -> dict[str, list[int]]:
+        # print('getGrandparent called with great=' + str(greats))
+        # print('Initializing getGrandparent with dict: ' + str(grandparents))
+        
+        if greats == -1:
+            origin = self.id
+            grandparents = {}
+            
+        if not (greats == 0 and self.id == origin):
+            for parentID in self.parents:
+                if greats != -1:
+                    if ('great ' * greats) + 'grandparents' in grandparents:
+                        # print(('great ' * greats) + 'grandparents found in dict')
+                        grandparents[('great ' * greats) + 'grandparents'].append(parentID)
+                    else:
+                        grandparents[('great ' * greats) + 'grandparents'] = [parentID]
+                parent = self.get(parentID, self.guildID)
+                
+                grandparents.update(parent.getGrandparents(greats + 1, grandparents, origin))
+
+        # print('Returning grandparent dict: ' + str(grandparents))
+        return grandparents
+    
+    def getGrandchildren(self, greats: int = -1, grandchildren: dict[str, list[int]] = {}, origin: int = 0) -> dict[str, list[int]]:
+        if greats == -1:
+            origin = self.id
+            grandchildren = {}
+            
+        if not (greats == 0 and self.id == origin):
+            for childID in self.children:
+                if greats != -1:
+                    if ('great ' * greats) + 'grandchildren' in grandchildren:
+                        grandchildren[('great ' * greats) + 'grandchildren'].append(childID)
+                    else:
+                        grandchildren[('great ' * greats) + 'grandchildren'] = [childID]
+                parent = self.get(childID, self.guildID)
+                
+                grandchildren.update(parent.getGrandchildren(greats + 1, grandchildren, origin))
+
+        return grandchildren

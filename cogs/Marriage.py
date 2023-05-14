@@ -285,17 +285,46 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 for partnerID in user.partners:                         # for each partner
                     partner = await ctx.guild.fetch_member(partnerID)   # fetch partner
                     partnersStr += str(partner.name) + '\n'             # add partner to list
+                
+                # get grandparents dict
+                grandparents = user.getGrandparents()
+                gpStrings = {}
+                for gpType, gpIDs in grandparents.items():
+                    gpStr = ''
+                    for gpID in gpIDs:
+                        gp = await ctx.guild.fetch_member(gpID)
+                        gpStr += str(gp.name) + '\n'
+                    gpStrings[gpType.title()] = gpStr
+                
+                # get grandchildren dict
+                grandchildren = user.getGrandchildren()
+                gcStrings = {}
+                for gcType, gcIDs in grandchildren.items():
+                    gcStr = ''
+                    for gcID in gcIDs:
+                        gc = await ctx.guild.fetch_member(gcID)
+                        gcStr += str(gc.name) + '\n'
+                    gcStrings[gcType.title()] = gcStr
                     
                 embed = discord.Embed(title=f'{target.name}\'s Family') # create embed
                 
                 # add family member lists to embed
                 if parentsStr:  embed.add_field(name='Parents', value=parentsStr, inline=False)
+                
+                for gpType, gpStr in gpStrings.items():
+                    embed.add_field(name=gpType, value=gpStr, inline=False)
+                    
                 if childrenStr: embed.add_field(name='Children', value=childrenStr, inline=False)
+                
+                for gcType, gcStr in gcStrings.items():
+                    embed.add_field(name=gcType, value=gcStr, inline=False)
+                
                 if partnersStr: embed.add_field(name='Partners', value=partnersStr, inline=False)
                 
                 await ctx.send(embed=embed) # send embed
             else:   # target has no family
                 ctx.send('You have no family. 😞')
+        # print('exiting family command')
             
 
 async def setup(bot):
