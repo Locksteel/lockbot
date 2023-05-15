@@ -22,7 +22,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Sends a proposal to another user'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            if authorUser.get(target.id, ctx.guild.id).pending:
+            if authorUser.pending:
+                await ctx.send("You have a pending request. Please wait to make another.")
+            elif authorUser.get(target.id, ctx.guild.id).pending:
                 await ctx.send("That user has pending request. Please wait to make another.")
             elif ctx.author.id == target.id:                            # if sender targeted themself
                 await ctx.send("You can't marry yourself.")
@@ -45,6 +47,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['❤️', '💔']
                 
                 try:
+                    authorUser.setPending(True)
                     authorUser.setOtherPending(target.id, True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
@@ -64,7 +67,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 await msg.remove_reaction('❤️', self.bot.user)
                 await msg.remove_reaction('💔', self.bot.user)
                 
-                authorUser.setOtherPending(target.id, False)    # reset pending flag
+                # reset pending flags
+                authorUser.setPending(False)
+                authorUser.setOtherPending(target.id, False)
             
     @commands.hybrid_command(name='adopt',
                              aliases=['a'],
@@ -76,7 +81,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Sends an adoption request to another user'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            if authorUser.get(target.id, ctx.guild.id).pending:
+            if authorUser.pending:
+                await ctx.send("You have a pending request. Please wait to make another.")
+            elif authorUser.get(target.id, ctx.guild.id).pending:
                 await ctx.send("That user has pending request. Please wait to make another.")
             elif ctx.author.id == target.id:                            # if sender targeted themself
                 await ctx.send("You can't adopt yourself.")
@@ -99,6 +106,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['❤️', '💔']
                 
                 try:
+                    authorUser.setPending(True)
                     authorUser.setOtherPending(target.id, True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
@@ -116,7 +124,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 await msg.remove_reaction('❤️', self.bot.user)
                 await msg.remove_reaction('💔', self.bot.user)
                         
-                authorUser.setOtherPending(target.id, False)    # reset pending flag
+                # reset pending flags
+                authorUser.setPending(False)
+                authorUser.setOtherPending(target.id, False)
                 
     @commands.hybrid_command(name='divorce',
                              aliases=['dv'],
