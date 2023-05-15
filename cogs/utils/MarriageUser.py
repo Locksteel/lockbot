@@ -191,3 +191,16 @@ class MarriageUser:
                     auntsUncles.append(auID)
         
         return auntsUncles
+    
+    def getStepparents(self) -> list[int]:
+        stepparents = []
+        
+        for parentID in self.parents:
+            parent = self.get(parentID, self.guildID)
+            for partnerID in parent.partners:
+                if partnerID != self.id and \
+                    partnerID not in self.parents and \
+                    partnerID not in stepparents:
+                    stepparents.append(partnerID)
+        
+        return stepparents

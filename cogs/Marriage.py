@@ -273,15 +273,19 @@ class MarriageCog(commands.Cog, name='Marriage'):
             if user.parents or user.children or user.partners:  # check if target has a family
                 # strings holding lists of family members
                 parentsStr = ''
+                stepparentStr = ''
                 siblingsStr = ''
                 childrenStr = ''
                 partnersStr = ''
-                auStr = ''
-                nnStr = ''
+                auntUncleStr = ''
+                nieceNephewStr = ''
                 
                 for parentID in user.parents:                           # for each parent
                     parent = await ctx.guild.fetch_member(parentID)     # fetch parent
                     parentsStr += str(parent.name) + '\n'               # add parent to list
+                for stepparentID in user.getStepparents():
+                    stepparent = await ctx.guild.fetch_member(stepparentID)
+                    stepparentStr += str(stepparent.name) + '\n'
                 for siblingID in user.getSiblings():                    # for each sibling
                     sibling = await ctx.guild.fetch_member(siblingID)   # fetch sibling
                     siblingsStr += str(sibling.name) + '\n'             # add sibling to list
@@ -314,22 +318,24 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 
                 for auntUncleID in user.getAuntsUncles():
                     auntUncle = await ctx.guild.fetch_member(auntUncleID)
-                    auStr += str(auntUncle.name) + '\n'
+                    auntUncleStr += str(auntUncle.name) + '\n'
                     
                 for nieceNephewID in user.getNiecesNephews():
                     nieceNephew = await ctx.guild.fetch_member(nieceNephewID)
-                    nnStr += str(nieceNephew.name) + '\n'
+                    nieceNephewStr += str(nieceNephew.name) + '\n'
                     
                 embed = discord.Embed(title=f'{target.name}\'s Family') # create embed
                 
                 # add family member lists to embed
-                if parentsStr:  embed.add_field(name='Parents', value=parentsStr, inline=False)
+                if parentsStr:      embed.add_field(name='Parents', value=parentsStr, inline=False)
                 
-                if siblingsStr: embed.add_field(name='Siblings', value=siblingsStr, inline=False)
+                if stepparentStr:   embed.add_field(name='Stepparents', value=stepparentStr, inline=False)
+                
+                if siblingsStr:     embed.add_field(name='Siblings', value=siblingsStr, inline=False)
                     
-                if childrenStr: embed.add_field(name='Children', value=childrenStr, inline=False)
+                if childrenStr:     embed.add_field(name='Children', value=childrenStr, inline=False)
                 
-                if partnersStr: embed.add_field(name='Partners', value=partnersStr, inline=False)
+                if partnersStr:     embed.add_field(name='Partners', value=partnersStr, inline=False)
                 
                 for gpType, gpStr in gpStrings.items():
                     embed.add_field(name=gpType, value=gpStr, inline=False)
@@ -337,9 +343,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 for gcType, gcStr in gcStrings.items():
                     embed.add_field(name=gcType, value=gcStr, inline=False)
                     
-                if auStr:       embed.add_field(name='Aunts/Uncles', value=auStr, inline=False)
+                if auntUncleStr:    embed.add_field(name='Aunts/Uncles', value=auntUncleStr, inline=False)
                     
-                if nnStr:       embed.add_field(name='Nieces/Nephews', value=nnStr, inline=False)
+                if nieceNephewStr:  embed.add_field(name='Nieces/Nephews', value=nieceNephewStr, inline=False)
                 
                 await ctx.send(embed=embed) # send embed
             else:   # target has no family
