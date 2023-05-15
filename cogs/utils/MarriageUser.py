@@ -49,11 +49,11 @@ class MarriageUser:
                 'pending':  self.pending
                 }
     
-    def saveJSON(self):
+    def saveJSON(self) -> None:
         with open(self.savePath, 'w') as f:
             json.dump(self.getDict(), f)
             
-    def loadJSON(self, path: str = None):
+    def loadJSON(self, path: str = None) -> None:
         path = self.savePath if path is None else path
         
         try:
@@ -67,7 +67,7 @@ class MarriageUser:
         except FileNotFoundError:
             print(f"No save found for user {self.id} in guild {self.guildID}. No changes have been made.")
     
-    def addChild(self, childID: int):
+    def addChild(self, childID: int) -> None:
         child = self.get(childID, self.guildID) # get child object from ID
         
         self.children.append(childID)   # add child ID to this object's list of children
@@ -80,39 +80,39 @@ class MarriageUser:
         #     child.parents.append(partnerID)     # add child ID to partner's list of children
         #     partner.children.append(childID)    # add child ID to partner's list of children
     
-    def addPartner(self, partnerID: int):
+    def addPartner(self, partnerID: int) -> None:
         partner = self.get(partnerID, self.guildID) # get partner object from ID
         
         self.partners.append(partnerID)     # add partner ID to this object's list of partners
         partner.partners.append(self.id)    # add this object's ID to list of partner's partners
         partner.saveJSON()                  # save changes
         
-    def removeChild(self, childID: int):
+    def removeChild(self, childID: int) -> None:
         child = self.get(childID, self.guildID)
         
         self.children.remove(childID)
         child.parents.remove(self.id)
         child.saveJSON()
     
-    def removePartner(self, partnerID: int):
+    def removePartner(self, partnerID: int) -> None:
         partner = self.get(partnerID, self.guildID)
         
         self.partners.remove(partnerID)
         partner.partners.remove(self.id)
         partner.saveJSON()
     
-    def removeParent(self, parentID: int):
+    def removeParent(self, parentID: int) -> None:
         parent = self.get(parentID, self.guildID)
         
         self.parents.remove(parentID)
         parent.children.remove(self.id)
         parent.saveJSON()
     
-    def setPending(self, newVal: bool):
+    def setPending(self, newVal: bool) -> None:
         self.pending = newVal
         self.saveJSON()
         
-    def setOtherPending(self, id: int, newVal: bool):
+    def setOtherPending(self, id: int, newVal: bool) -> None:
         other = self.get(id, self.guildID)
         other.setPending(newVal)
         
