@@ -168,3 +168,14 @@ class MarriageUser:
                     siblings.append(siblingID)
                 
         return siblings
+    
+    def getNiecesNephews(self) -> list[int]:
+        niecesNephews = []
+        
+        for siblingID in self.getSiblings():
+            sibling = self.get(siblingID, self.guildID)
+            for childID in sibling.children:
+                if childID not in niecesNephews:
+                    niecesNephews.append(childID)
+        
+        return niecesNephews
