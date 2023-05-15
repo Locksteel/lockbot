@@ -140,10 +140,11 @@ class MarriageUser:
         # print('Returning grandparent dict: ' + str(grandparents))
         return grandparents
     
-    def getGrandchildren(self, greats: int = -1, grandchildren: dict[str, list[int]] = {}, origin: int = 0) -> dict[str, list[int]]:
+    def getGrandchildren(self, greats: int = -1, origin: int = 0) -> dict[str, list[int]]:
+        grandchildren = {}
+        
         if greats == -1:
             origin = self.id
-            grandchildren = {}
             
         if not (greats == 0 and self.id == origin):
             for childID in self.children:
@@ -154,7 +155,7 @@ class MarriageUser:
                         grandchildren[('great ' * greats) + 'grandchildren'] = [childID]
                 parent = self.get(childID, self.guildID)
                 
-                grandchildren.update(parent.getGrandchildren(greats + 1, grandchildren, origin))
+                grandchildren.update(parent.getGrandchildren(greats + 1, origin))
 
         return grandchildren
     
