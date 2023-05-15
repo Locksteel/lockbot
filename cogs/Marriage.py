@@ -276,6 +276,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 siblingsStr = ''
                 childrenStr = ''
                 partnersStr = ''
+                auStr = ''
                 nnStr = ''
                 
                 for parentID in user.parents:                           # for each parent
@@ -310,6 +311,10 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         gc = await ctx.guild.fetch_member(gcID)
                         gcStr += str(gc.name) + '\n'
                     gcStrings[gcType.title()] = gcStr
+                
+                for auntUncleID in user.getAuntsUncles():
+                    auntUncle = await ctx.guild.fetch_member(auntUncleID)
+                    auStr += str(auntUncle.name) + '\n'
                     
                 for nieceNephewID in user.getNiecesNephews():
                     nieceNephew = await ctx.guild.fetch_member(nieceNephewID)
@@ -331,6 +336,8 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 
                 for gcType, gcStr in gcStrings.items():
                     embed.add_field(name=gcType, value=gcStr, inline=False)
+                    
+                if auStr:       embed.add_field(name='Aunts/Uncles', value=auStr, inline=False)
                     
                 if nnStr:       embed.add_field(name='Nieces/Nephews', value=nnStr, inline=False)
                 
