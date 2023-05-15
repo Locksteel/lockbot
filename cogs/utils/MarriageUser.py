@@ -176,7 +176,7 @@ class MarriageUser:
         for siblingID in self.getSiblings():
             sibling = self.get(siblingID, self.guildID)
             for childID in sibling.children:
-                if childID not in niecesNephews:
+                if childID != self.id and childID not in niecesNephews:
                     niecesNephews.append(childID)
         
         return niecesNephews
