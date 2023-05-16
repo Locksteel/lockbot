@@ -359,7 +359,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 
                 await ctx.send(embed=embed) # send embed
             else:   # target has no family
-                ctx.send('You have no family. 😞')
+                await ctx.send('That user has no family. 😞')
         # print('exiting family command')
             
 
