@@ -285,6 +285,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 parentsStr = ''
                 stepparentStr = ''
                 siblingsStr = ''
+                stepsiblingStr = ''
                 childrenStr = ''
                 partnersStr = ''
                 auntUncleStr = ''
@@ -299,6 +300,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 for siblingID in user.getSiblings():                    # for each sibling
                     sibling = await ctx.guild.fetch_member(siblingID)   # fetch sibling
                     siblingsStr += str(sibling.name) + '\n'             # add sibling to list
+                for stepsiblingID in user.getStepsiblings():
+                    stepsibling = await ctx.guild.fetch_member(stepsiblingID)
+                    stepsiblingStr += str(stepsibling.name) + '\n'
                 for childID in user.children:                           # for each child
                     child = await ctx.guild.fetch_member(childID)       # fetch child
                     childrenStr += str(child.name) + '\n'               # add child to list
