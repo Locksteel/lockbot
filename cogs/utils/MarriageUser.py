@@ -204,16 +204,3 @@ class MarriageUser:
                     stepparents.append(partnerID)
         
         return stepparents
-
-    def getStepsiblings(self) -> list[int]:
-        stepsiblings = []
-        
-        for spID in self.getStepparents():
-            stepparent = self.get(spID, self.guildID)
-            for ssID in stepparent.children:
-                if ssID != self.id and \
-                    ssID not in self.getSiblings() and \
-                    ssID not in stepsiblings:
-                    stepsiblings.append(ssID)
-                    
-        return stepsiblings
