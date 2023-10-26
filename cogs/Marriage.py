@@ -22,7 +22,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Sends a proposal to another user'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            if authorUser.get(target.id, ctx.guild.id).pending:
+            if authorUser.pending:
+                await ctx.send("You have a pending request. Please wait to make another.")
+            elif authorUser.get(target.id, ctx.guild.id).pending:
                 await ctx.send("That user has pending request. Please wait to make another.")
             elif ctx.author.id == target.id:                            # if sender targeted themself
                 await ctx.send("You can't marry yourself.")
@@ -45,6 +47,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['❤️', '💔']
                 
                 try:
+                    authorUser.setPending(True)
                     authorUser.setOtherPending(target.id, True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
@@ -64,7 +67,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 await msg.remove_reaction('❤️', self.bot.user)
                 await msg.remove_reaction('💔', self.bot.user)
                 
-                authorUser.setOtherPending(target.id, False)    # reset pending flag
+                # reset pending flags
+                authorUser.setPending(False)
+                authorUser.setOtherPending(target.id, False)
             
     @commands.hybrid_command(name='adopt',
                              aliases=['a'],
@@ -76,7 +81,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
         '''Sends an adoption request to another user'''
         
         with MarriageUser(ctx.author.id, ctx.guild.id) as authorUser:
-            if authorUser.get(target.id, ctx.guild.id).pending:
+            if authorUser.pending:
+                await ctx.send("You have a pending request. Please wait to make another.")
+            elif authorUser.get(target.id, ctx.guild.id).pending:
                 await ctx.send("That user has pending request. Please wait to make another.")
             elif ctx.author.id == target.id:                            # if sender targeted themself
                 await ctx.send("You can't adopt yourself.")
@@ -99,6 +106,7 @@ class MarriageCog(commands.Cog, name='Marriage'):
                         str(reaction.emoji) in ['❤️', '💔']
                 
                 try:
+                    authorUser.setPending(True)
                     authorUser.setOtherPending(target.id, True)
                     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
                 except TimeoutError:
@@ -116,7 +124,9 @@ class MarriageCog(commands.Cog, name='Marriage'):
                 await msg.remove_reaction('❤️', self.bot.user)
                 await msg.remove_reaction('💔', self.bot.user)
                         
-                authorUser.setOtherPending(target.id, False)    # reset pending flag
+                # reset pending flags
+                authorUser.setPending(False)
+                authorUser.setOtherPending(target.id, False)
                 
     @commands.hybrid_command(name='divorce',
                              aliases=['dv'],
@@ -273,29 +283,84 @@ class MarriageCog(commands.Cog, name='Marriage'):
             if user.parents or user.children or user.partners:  # check if target has a family
                 # strings holding lists of family members
                 parentsStr = ''
+                stepparentStr = ''
+                siblingsStr = ''
                 childrenStr = ''
                 partnersStr = ''
+                auntUncleStr = ''
+                nieceNephewStr = ''
                 
                 for parentID in user.parents:                           # for each parent
                     parent = await ctx.guild.fetch_member(parentID)     # fetch parent
                     parentsStr += str(parent.name) + '\n'               # add parent to list
+                for stepparentID in user.getStepparents():
+                    stepparent = await ctx.guild.fetch_member(stepparentID)
+                    stepparentStr += str(stepparent.name) + '\n'
+                for siblingID in user.getSiblings():                    # for each sibling
+                    sibling = await ctx.guild.fetch_member(siblingID)   # fetch sibling
+                    siblingsStr += str(sibling.name) + '\n'             # add sibling to list
                 for childID in user.children:                           # for each child
                     child = await ctx.guild.fetch_member(childID)       # fetch child
                     childrenStr += str(child.name) + '\n'               # add child to list
                 for partnerID in user.partners:                         # for each partner
                     partner = await ctx.guild.fetch_member(partnerID)   # fetch partner
                     partnersStr += str(partner.name) + '\n'             # add partner to list
+                
+                # get grandparents dict
+                grandparents = user.getGrandparents()
+                gpStrings = {}
+                for gpType, gpIDs in grandparents.items():
+                    gpStr = ''
+                    for gpID in gpIDs:
+                        gp = await ctx.guild.fetch_member(gpID)
+                        gpStr += str(gp.name) + '\n'
+                    gpStrings[gpType.title()] = gpStr
+                
+                # get grandchildren dict
+                grandchildren = user.getGrandchildren()
+                gcStrings = {}
+                for gcType, gcIDs in grandchildren.items():
+                    gcStr = ''
+                    for gcID in gcIDs:
+                        gc = await ctx.guild.fetch_member(gcID)
+                        gcStr += str(gc.name) + '\n'
+                    gcStrings[gcType.title()] = gcStr
+                
+                for auntUncleID in user.getAuntsUncles():
+                    auntUncle = await ctx.guild.fetch_member(auntUncleID)
+                    auntUncleStr += str(auntUncle.name) + '\n'
+                    
+                for nieceNephewID in user.getNiecesNephews():
+                    nieceNephew = await ctx.guild.fetch_member(nieceNephewID)
+                    nieceNephewStr += str(nieceNephew.name) + '\n'
                     
                 embed = discord.Embed(title=f'{target.name}\'s Family') # create embed
                 
                 # add family member lists to embed
-                if parentsStr:  embed.add_field(name='Parents', value=parentsStr, inline=False)
-                if childrenStr: embed.add_field(name='Children', value=childrenStr, inline=False)
-                if partnersStr: embed.add_field(name='Partners', value=partnersStr, inline=False)
+                if parentsStr:      embed.add_field(name='Parents', value=parentsStr, inline=False)
+                
+                if stepparentStr:   embed.add_field(name='Stepparents', value=stepparentStr, inline=False)
+                
+                if siblingsStr:     embed.add_field(name='Siblings', value=siblingsStr, inline=False)
+                    
+                if childrenStr:     embed.add_field(name='Children', value=childrenStr, inline=False)
+                
+                if partnersStr:     embed.add_field(name='Partners', value=partnersStr, inline=False)
+                
+                for gpType, gpStr in gpStrings.items():
+                    embed.add_field(name=gpType, value=gpStr, inline=False)
+                
+                for gcType, gcStr in gcStrings.items():
+                    embed.add_field(name=gcType, value=gcStr, inline=False)
+                    
+                if auntUncleStr:    embed.add_field(name='Aunts/Uncles', value=auntUncleStr, inline=False)
+                    
+                if nieceNephewStr:  embed.add_field(name='Nieces/Nephews', value=nieceNephewStr, inline=False)
                 
                 await ctx.send(embed=embed) # send embed
             else:   # target has no family
-                ctx.send('You have no family. 😞')
+                await ctx.send('That user has no family. 😞')
+        # print('exiting family command')
             
 
 async def setup(bot):
