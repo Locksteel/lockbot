@@ -14,7 +14,7 @@ class GeminiCog(commands.Cog, name='Gemini'):
         
         self.personalities = os.listdir('./personalities')
     
-    def getResponse(self, prompt, username, personality="chill.txt", randPerson=False):
+    def getResponse(self, prompt, username, personality="default.txt", randPerson=False):
         '''Returns the Gemini-generated response from passed prompt'''
         intro = ""
         
@@ -35,16 +35,13 @@ class GeminiCog(commands.Cog, name='Gemini'):
                              )
     async def generate(self, ctx,
                    prompt:  str = commands.parameter(description='Prompt to pass to AI'),
-                   random: str = commands.parameter(description='True or false, respond as a random personality', default='false')
+                   random: bool = commands.parameter(description='True or false, respond as a random personality', default=False)
                    ):
         '''Sends the an AI-generated response to a prompt'''
-        rand = False
-        if random == "true":
-            rand = True
         if not prompt:
             await ctx.send("Prompt is empty.")
         else:
-            response = self.getResponse(prompt, ctx.author.name, randPerson=rand)
+            response = self.getResponse(prompt, ctx.author.name, randPerson=random)
             await ctx.send(response)
             printLog(ctx)
         
