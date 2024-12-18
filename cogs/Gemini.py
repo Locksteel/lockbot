@@ -21,7 +21,7 @@ class GeminiCog(commands.Cog, name='Gemini'):
         username = ctx.author.name
         attachments = ctx.message.attachments
         
-        attachFlag = attachments[0] and "image" in attachments[0].content_type and attachments[0].size < 10000000
+        attachFlag = attachments and "image" in attachments[0].content_type and attachments[0].size < 10000000
         
         intro = ""
         
