@@ -1,10 +1,12 @@
 import os
+import io
 from random import choice
 
 from localcmds import printLog
 
 from discord.ext import commands
 import google.generativeai as genai
+from PIL import Image
 
 class GeminiCog(commands.Cog, name='Gemini'):
     '''A group of commands accessing twitch.tv'''
@@ -14,8 +16,13 @@ class GeminiCog(commands.Cog, name='Gemini'):
         
         self.personalities = os.listdir('./personalities')
     
-    def getResponse(self, prompt, username, personality="default.txt", randPerson=False):
+    async def getResponse(self, prompt, ctx: commands.Context, personality="default.txt", randPerson=False):
         '''Returns the Gemini-generated response from passed prompt'''
+        username = ctx.author.name
+        attachments = ctx.message.attachments
+        
+        attachFlag = attachments[0] and "image" in attachments[0].content_type and attachments[0].size < 10000000
+        
         intro = ""
         
         if randPerson:
@@ -23,17 +30,33 @@ class GeminiCog(commands.Cog, name='Gemini'):
         
         with open('personalities/' + personality, 'r') as file:
             intro = file.read().replace('\n', ' ')
+            
+        if attachFlag:
+            intro += " You will also receive an image that the person you're talking to is giving you."
+            
         intro += " Everything after this sentence is said by a person whose name is listed before their message.\n\n" + username + ": "
         exit = "\n\nLockBot: "
+        fullPrompt = 0
         
-        response = self.model.generate_content(intro + prompt + exit)
+        # if there is an attachment, it is an image, and it is smaller than 10 MB
+        if attachFlag:
+            buffIO = io.BytesIO(await attachments[0].read())
+            buffIO.seek(0)
+            
+            image = Image.open(buffIO)
+            
+            fullPrompt = [intro + prompt + exit, image]
+        else:
+            fullPrompt = intro + prompt + exit
+        
+        response = self.model.generate_content(fullPrompt)
         return response.text
     
     @commands.hybrid_command(name='generate',
                              aliases=['gen', 'ai', 'gemini'],
                              brief='Sends AI-generated response to prompt'
                              )
-    async def generate(self, ctx,
+    async def generate(self, ctx: commands.Context,
                    prompt:  str = commands.parameter(description='Prompt to pass to AI'),
                    random: bool = commands.parameter(description='True or false, respond as a random personality', default=False)
                    ):
@@ -41,7 +64,7 @@ class GeminiCog(commands.Cog, name='Gemini'):
         if not prompt:
             await ctx.send("Prompt is empty.")
         else:
-            response = self.getResponse(prompt, ctx.author.name, randPerson=random)
+            response = await self.getResponse(prompt, ctx, randPerson=random)
             await ctx.send(response)
             printLog(ctx)
         
