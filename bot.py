@@ -45,6 +45,11 @@ async def on_ready():
                 for userID in files:
                     with MarriageUser(int(userID[:-5]), guildID) as user:
                         user.setPending(False)
+                        
+    # create gbf file if not present
+    if not os.path.exists("serverData/gbf.txt"):
+        with open("serverData/gbf.txt", "w") as file:
+            file.write("0")
     
     print(f'{bot.user} has connected to Discord!')
     
